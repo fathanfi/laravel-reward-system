@@ -2,15 +2,14 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Achiever\Unlockable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable, Unlockable;
 
     /**
      * The attributes that are mass assignable.
@@ -41,4 +40,48 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * The comments that belong to the user.
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * The lessons that a user has access to.
+     */
+    public function lessons()
+    {
+        return $this->belongsToMany(Lesson::class);
+    }
+
+    /**
+     * The lessons that a user has watched.
+     */
+    public function watched()
+    {
+        return $this->belongsToMany(Lesson::class)->wherePivot('watched', true);
+    }
+
+    /**
+     * The rewards that a user has gained.
+     */
+    public function rewards()
+    {
+        return $this->belongsToMany(Reward::class, 'user_reward')
+            ->using(UserReward::class)
+            ->withTimestamps();
+    }
+
+    /**
+     * The badge that a user has gained.
+     */
+    public function badges()
+    {
+        return $this->belongsToMany(Badge::class, 'user_badge')
+            ->using(UserBadge::class)
+            ->withTimestamps();
+    }
 }

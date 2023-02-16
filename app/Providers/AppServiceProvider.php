@@ -2,6 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\User;
+use App\Models\UserReward;
+use App\Models\UserBadge;
+use App\Observers\UserRewardObserver;
+use App\Observers\UserBadgeObserver;
+use App\Observers\UserObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        UserReward::observe(UserRewardObserver::class);
+        UserBadge::observe(UserBadgeObserver::class);
+        User::observe(UserObserver::class);
     }
 }
